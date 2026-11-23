@@ -37,3 +37,18 @@ resource "google_sql_database_instance" "db_instance" {
 
   deletion_protection = false
 }
+
+resource "google_dns_managed_zone" "dns_zone" {
+  name        = "td_dns"
+  dns_name    = "kiowy.com."
+  description = "Zone DNS pour le TD Terraform"
+}
+
+resource "google_dns_record_set" "app_dns" {
+  name = "app.${google_dns_managed_zone.dns_zone.dns_name}"
+  managed_zone = google_dns_managed_zone.dns_zone.name
+  type = "A"
+  ttl = 300
+
+  rrdatas = [google_compute_instance.vm_instance.network_interface[0].access_config[0].nat_ip]
+}
