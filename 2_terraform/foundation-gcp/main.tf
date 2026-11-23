@@ -3,7 +3,8 @@ resource "google_compute_network" "vpc_network" {
 }
 
 resource "google_compute_instance" "vm_instance" {
-  name         = "td2"
+  count = 2
+  name         = "td2${count.index}"
   machine_type = "n2-standard-2"
   zone         = "europe-west1-b"
 
@@ -50,5 +51,5 @@ resource "google_dns_record_set" "app_dns" {
   type = "A"
   ttl = 300
 
-  rrdatas = [google_compute_instance.vm_instance.network_interface[0].access_config[0].nat_ip]
+  rrdatas = google_compute_instance.vm_instance[*].network_interface[0].access_config[0].nat_ip
 }
